@@ -157,3 +157,189 @@ def test_comment():
         str(h.comment("<script>alert(1)</script>"))
         == "<!--&lt;script&gt;alert(1)&lt;/script&gt;-->"
     )
+
+
+# Parametrized tests for all HTML5 tags
+# Regular (non-void) tags
+REGULAR_TAGS = [
+    ("a", h.a),
+    ("abbr", h.abbr),
+    ("acronym", h.acronym),
+    ("address", h.address),
+    ("article", h.article),
+    ("aside", h.aside),
+    ("audio", h.audio),
+    ("b", h.b),
+    ("bdi", h.bdi),
+    ("bdo", h.bdo),
+    ("big", h.big),
+    ("blockquote", h.blockquote),
+    ("body", h.body),
+    ("button", h.button),
+    ("canvas", h.canvas),
+    ("caption", h.caption),
+    ("center", h.center),
+    ("cite", h.cite),
+    ("code", h.code),
+    ("colgroup", h.colgroup),
+    ("data", h.data),
+    ("datalist", h.datalist),
+    ("dd", h.dd),
+    ("del", h.del_),
+    ("details", h.details),
+    ("dfn", h.dfn),
+    ("dialog", h.dialog),
+    ("dir", h.dir_),
+    ("div", h.div),
+    ("dl", h.dl),
+    ("dt", h.dt),
+    ("em", h.em),
+    ("fencedframe", h.fencedframe),
+    ("fieldset", h.fieldset),
+    ("figcaption", h.figcaption),
+    ("figure", h.figure),
+    ("font", h.font),
+    ("footer", h.footer),
+    ("form", h.form),
+    ("frame", h.frame),
+    ("frameset", h.frameset),
+    ("h1", h.h1),
+    ("h2", h.h2),
+    ("h3", h.h3),
+    ("h4", h.h4),
+    ("h5", h.h5),
+    ("h6", h.h6),
+    ("head", h.head),
+    ("header", h.header),
+    ("hgroup", h.hgroup),
+    ("html", h.html),
+    ("i", h.i),
+    ("iframe", h.iframe),
+    ("ins", h.ins),
+    ("kbd", h.kbd),
+    ("label", h.label),
+    ("legend", h.legend),
+    ("li", h.li),
+    ("main", h.main),
+    ("map", h.map_),
+    ("mark", h.mark),
+    ("marquee", h.marquee),
+    ("menu", h.menu),
+    ("meter", h.meter),
+    ("nav", h.nav),
+    ("nobr", h.nobr),
+    ("noembed", h.noembed),
+    ("noframes", h.noframes),
+    ("noscript", h.noscript),
+    ("object", h.object_),
+    ("ol", h.ol),
+    ("optgroup", h.optgroup),
+    ("option", h.option),
+    ("output", h.output),
+    ("p", h.p),
+    ("picture", h.picture),
+    ("plaintext", h.plaintext),
+    ("pre", h.pre),
+    ("progress", h.progress),
+    ("q", h.q),
+    ("rb", h.rb),
+    ("rp", h.rp),
+    ("rt", h.rt),
+    ("rtc", h.rtc),
+    ("ruby", h.ruby),
+    ("s", h.s),
+    ("samp", h.samp),
+    ("script", h.script),
+    ("search", h.search),
+    ("section", h.section),
+    ("select", h.select),
+    ("selectedcontent", h.selectedcontent),
+    ("slot", h.slot),
+    ("small", h.small),
+    ("span", h.span),
+    ("strike", h.strike),
+    ("strong", h.strong),
+    ("style", h.style),
+    ("sub", h.sub),
+    ("summary", h.summary),
+    ("sup", h.sup),
+    ("table", h.table),
+    ("tbody", h.tbody),
+    ("td", h.td),
+    ("template", h.template),
+    ("textarea", h.textarea),
+    ("tfoot", h.tfoot),
+    ("th", h.th),
+    ("thead", h.thead),
+    ("time", h.time),
+    ("title", h.title),
+    ("tr", h.tr),
+    ("tt", h.tt),
+    ("u", h.u),
+    ("ul", h.ul),
+    ("var", h.var),
+    ("video", h.video),
+    ("xmp", h.xmp),
+]
+
+# Void tags (self-closing, no children allowed)
+VOID_TAGS = [
+    ("area", h.area),
+    ("base", h.base),
+    ("br", h.br),
+    ("col", h.col),
+    ("embed", h.embed),
+    ("hr", h.hr),
+    ("img", h.img),
+    ("input", h.input_),
+    ("link", h.link),
+    ("meta", h.meta),
+    ("param", h.param),
+    ("source", h.source),
+    ("track", h.track),
+    ("wbr", h.wbr),
+]
+
+
+@pytest.mark.parametrize("tag_name,tag_class", REGULAR_TAGS)
+def test_regular_tag_renders(tag_name, tag_class):
+    """Test that regular tags render with opening and closing tags."""
+    assert str(tag_class()) == f"<{tag_name}></{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", REGULAR_TAGS)
+def test_regular_tag_with_child(tag_name, tag_class):
+    """Test that regular tags can have children."""
+    assert str(tag_class()["content"]) == f"<{tag_name}>content</{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", REGULAR_TAGS)
+def test_regular_tag_with_attribute(tag_name, tag_class):
+    """Test that regular tags can have attributes."""
+    assert str(tag_class(id_="test")) == f'<{tag_name} id="test"></{tag_name}>'
+
+
+@pytest.mark.parametrize("tag_name,tag_class", REGULAR_TAGS)
+def test_regular_tag_class_getitem(tag_name, tag_class):
+    """Test that regular tags support class[children] syntax."""
+    assert str(tag_class["content"]) == f"<{tag_name}>content</{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", VOID_TAGS)
+def test_void_tag_renders(tag_name, tag_class):
+    """Test that void tags render without closing tag."""
+    assert str(tag_class()) == f"<{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", VOID_TAGS)
+def test_void_tag_with_attribute(tag_name, tag_class):
+    """Test that void tags can have attributes."""
+    assert str(tag_class(id_="test")) == f'<{tag_name} id="test">'
+
+
+@pytest.mark.parametrize("tag_name,tag_class", VOID_TAGS)
+def test_void_tag_rejects_children(tag_name, tag_class):
+    """Test that void tags raise an error when given children."""
+    with pytest.raises(ValueError) as excinfo:
+        tag_class()["content"]
+    assert f"Void tag <{tag_name}> cannot have children" in str(excinfo.value)
