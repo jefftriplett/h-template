@@ -1,8 +1,10 @@
 # https://github.com/hyperhype/hyperscript
 # https://www.w3.org/TR/html52/syntax.html#writing-html-documents-elements
+import warnings
 from collections.abc import Generator, Iterable, Mapping
 from html import escape
 from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -160,9 +162,21 @@ def tag_class(_tag):
     return type(_tag, (tag,), {"__init__": __init__})
 
 
+def deprecated_tag_class(_tag):
+    def __init__(self, **attrs):
+        warnings.warn(
+            f"The <{_tag}> tag is deprecated in HTML5",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        tag.__init__(self, _tag, **attrs)
+
+    return type(_tag, (tag,), {"__init__": __init__})
+
+
 a = tag_class("a")
 abbr = tag_class("abbr")
-acronym = tag_class("acronym")  # Deprecated
+acronym = deprecated_tag_class("acronym")  # Deprecated
 address = tag_class("address")
 area = tag_class("area")
 article = tag_class("article")
@@ -172,14 +186,14 @@ b = tag_class("b")
 base = tag_class("base")
 bdi = tag_class("bdi")
 bdo = tag_class("bdo")
-big = tag_class("big")  # Deprecated
+big = deprecated_tag_class("big")  # Deprecated
 blockquote = tag_class("blockquote")
 body = tag_class("body")
 br = tag_class("br")
 button = tag_class("button")
 canvas = tag_class("canvas")
 caption = tag_class("caption")
-center = tag_class("center")  # Deprecated
+center = deprecated_tag_class("center")  # Deprecated
 cite = tag_class("cite")
 code = tag_class("code")
 col = tag_class("col")
@@ -191,7 +205,7 @@ del_ = tag_class("del")  # Python keyword
 details = tag_class("details")
 dfn = tag_class("dfn")
 dialog = tag_class("dialog")
-dir_ = tag_class("dir")  # Deprecated
+dir_ = deprecated_tag_class("dir")  # Deprecated
 div = tag_class("div")
 dl = tag_class("dl")
 dt = tag_class("dt")
@@ -201,11 +215,11 @@ fencedframe = tag_class("fencedframe")  # Experimental
 fieldset = tag_class("fieldset")
 figcaption = tag_class("figcaption")
 figure = tag_class("figure")
-font = tag_class("font")  # Deprecated
+font = deprecated_tag_class("font")  # Deprecated
 footer = tag_class("footer")
 form = tag_class("form")
-frame = tag_class("frame")  # Deprecated
-frameset = tag_class("frameset")  # Deprecated
+frame = deprecated_tag_class("frame")  # Deprecated
+frameset = deprecated_tag_class("frameset")  # Deprecated
 h1 = tag_class("h1")
 h2 = tag_class("h2")
 h3 = tag_class("h3")
@@ -230,14 +244,14 @@ link = tag_class("link")
 main = tag_class("main")
 map_ = tag_class("map")  # Python builtin
 mark = tag_class("mark")
-marquee = tag_class("marquee")  # Deprecated
+marquee = deprecated_tag_class("marquee")  # Deprecated
 menu = tag_class("menu")
 meta = tag_class("meta")
 meter = tag_class("meter")
 nav = tag_class("nav")
-nobr = tag_class("nobr")  # Deprecated
-noembed = tag_class("noembed")  # Deprecated
-noframes = tag_class("noframes")  # Deprecated
+nobr = deprecated_tag_class("nobr")  # Deprecated
+noembed = deprecated_tag_class("noembed")  # Deprecated
+noframes = deprecated_tag_class("noframes")  # Deprecated
 noscript = tag_class("noscript")
 object_ = tag_class("object")  # Python builtin
 ol = tag_class("ol")
@@ -245,16 +259,16 @@ optgroup = tag_class("optgroup")
 option = tag_class("option")
 output = tag_class("output")
 p = tag_class("p")
-param = tag_class("param")  # Deprecated
+param = deprecated_tag_class("param")  # Deprecated
 picture = tag_class("picture")
-plaintext = tag_class("plaintext")  # Deprecated
+plaintext = deprecated_tag_class("plaintext")  # Deprecated
 pre = tag_class("pre")
 progress = tag_class("progress")
 q = tag_class("q")
-rb = tag_class("rb")  # Deprecated
+rb = deprecated_tag_class("rb")  # Deprecated
 rp = tag_class("rp")
 rt = tag_class("rt")
-rtc = tag_class("rtc")  # Deprecated
+rtc = deprecated_tag_class("rtc")  # Deprecated
 ruby = tag_class("ruby")
 s = tag_class("s")
 samp = tag_class("samp")
@@ -267,7 +281,7 @@ slot = tag_class("slot")
 small = tag_class("small")
 source = tag_class("source")
 span = tag_class("span")
-strike = tag_class("strike")  # Deprecated
+strike = deprecated_tag_class("strike")  # Deprecated
 strong = tag_class("strong")
 style = tag_class("style")
 sub = tag_class("sub")
@@ -285,10 +299,10 @@ time = tag_class("time")
 title = tag_class("title")
 tr = tag_class("tr")
 track = tag_class("track")
-tt = tag_class("tt")  # Deprecated
+tt = deprecated_tag_class("tt")  # Deprecated
 u = tag_class("u")
 ul = tag_class("ul")
 var = tag_class("var")
 video = tag_class("video")
 wbr = tag_class("wbr")
-xmp = tag_class("xmp")  # Deprecated
+xmp = deprecated_tag_class("xmp")  # Deprecated

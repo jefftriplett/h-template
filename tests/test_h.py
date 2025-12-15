@@ -1,3 +1,4 @@
+import warnings
 from collections import OrderedDict
 
 import pytest
@@ -153,10 +154,37 @@ def test_unsafe_raw_text():
 
 
 def test_comment():
-    assert (
-        str(h.comment("<script>alert(1)</script>"))
-        == "<!--&lt;script&gt;alert(1)&lt;/script&gt;-->"
-    )
+    assert str(h.comment("Hello world")) == "<!--Hello world-->"
+
+
+def test_comment_double_dash():
+    assert str(h.comment("foo--bar")) == "<!--foo- -bar-->"
+
+
+def test_comment_trailing_dash():
+    assert str(h.comment("foo-")) == "<!--foo- -->"
+
+
+def test_comment_with_html():
+    # HTML comments don't require escaping of < and >
+    assert str(h.comment("<script>alert(1)</script>")) == "<!--<script>alert(1)</script>-->"
+
+
+# Tests for __repr__
+def test_repr_empty_tag():
+    assert repr(h.div()) == "div()"
+
+
+def test_repr_tag_with_attrs():
+    assert repr(h.div(id_="foo", class_="bar")) == "div(id='foo', class='bar')"
+
+
+def test_repr_tag_with_children():
+    assert repr(h.div()["content"]) == "div()[1 children]"
+
+
+def test_repr_tag_with_attrs_and_children():
+    assert repr(h.div(id_="foo")["content"]) == "div(id='foo')[1 children]"
 
 
 # Parametrized tests for all HTML5 tags
@@ -164,7 +192,6 @@ def test_comment():
 REGULAR_TAGS = [
     ("a", h.a),
     ("abbr", h.abbr),
-    ("acronym", h.acronym),
     ("address", h.address),
     ("article", h.article),
     ("aside", h.aside),
@@ -172,13 +199,11 @@ REGULAR_TAGS = [
     ("b", h.b),
     ("bdi", h.bdi),
     ("bdo", h.bdo),
-    ("big", h.big),
     ("blockquote", h.blockquote),
     ("body", h.body),
     ("button", h.button),
     ("canvas", h.canvas),
     ("caption", h.caption),
-    ("center", h.center),
     ("cite", h.cite),
     ("code", h.code),
     ("colgroup", h.colgroup),
@@ -189,7 +214,6 @@ REGULAR_TAGS = [
     ("details", h.details),
     ("dfn", h.dfn),
     ("dialog", h.dialog),
-    ("dir", h.dir_),
     ("div", h.div),
     ("dl", h.dl),
     ("dt", h.dt),
@@ -198,11 +222,8 @@ REGULAR_TAGS = [
     ("fieldset", h.fieldset),
     ("figcaption", h.figcaption),
     ("figure", h.figure),
-    ("font", h.font),
     ("footer", h.footer),
     ("form", h.form),
-    ("frame", h.frame),
-    ("frameset", h.frameset),
     ("h1", h.h1),
     ("h2", h.h2),
     ("h3", h.h3),
@@ -223,13 +244,9 @@ REGULAR_TAGS = [
     ("main", h.main),
     ("map", h.map_),
     ("mark", h.mark),
-    ("marquee", h.marquee),
     ("menu", h.menu),
     ("meter", h.meter),
     ("nav", h.nav),
-    ("nobr", h.nobr),
-    ("noembed", h.noembed),
-    ("noframes", h.noframes),
     ("noscript", h.noscript),
     ("object", h.object_),
     ("ol", h.ol),
@@ -238,14 +255,11 @@ REGULAR_TAGS = [
     ("output", h.output),
     ("p", h.p),
     ("picture", h.picture),
-    ("plaintext", h.plaintext),
     ("pre", h.pre),
     ("progress", h.progress),
     ("q", h.q),
-    ("rb", h.rb),
     ("rp", h.rp),
     ("rt", h.rt),
-    ("rtc", h.rtc),
     ("ruby", h.ruby),
     ("s", h.s),
     ("samp", h.samp),
@@ -257,7 +271,6 @@ REGULAR_TAGS = [
     ("slot", h.slot),
     ("small", h.small),
     ("span", h.span),
-    ("strike", h.strike),
     ("strong", h.strong),
     ("style", h.style),
     ("sub", h.sub),
@@ -274,12 +287,10 @@ REGULAR_TAGS = [
     ("time", h.time),
     ("title", h.title),
     ("tr", h.tr),
-    ("tt", h.tt),
     ("u", h.u),
     ("ul", h.ul),
     ("var", h.var),
     ("video", h.video),
-    ("xmp", h.xmp),
 ]
 
 # Void tags (self-closing, no children allowed)
@@ -294,10 +305,35 @@ VOID_TAGS = [
     ("input", h.input_),
     ("link", h.link),
     ("meta", h.meta),
-    ("param", h.param),
     ("source", h.source),
     ("track", h.track),
     ("wbr", h.wbr),
+]
+
+# Deprecated tags (emit DeprecationWarning)
+DEPRECATED_TAGS = [
+    ("acronym", h.acronym),
+    ("big", h.big),
+    ("center", h.center),
+    ("dir", h.dir_),
+    ("font", h.font),
+    ("frame", h.frame),
+    ("frameset", h.frameset),
+    ("marquee", h.marquee),
+    ("nobr", h.nobr),
+    ("noembed", h.noembed),
+    ("noframes", h.noframes),
+    ("plaintext", h.plaintext),
+    ("rb", h.rb),
+    ("rtc", h.rtc),
+    ("strike", h.strike),
+    ("tt", h.tt),
+    ("xmp", h.xmp),
+]
+
+# Deprecated void tags
+DEPRECATED_VOID_TAGS = [
+    ("param", h.param),
 ]
 
 
@@ -343,3 +379,61 @@ def test_void_tag_rejects_children(tag_name, tag_class):
     with pytest.raises(ValueError) as excinfo:
         tag_class()["content"]
     assert f"Void tag <{tag_name}> cannot have children" in str(excinfo.value)
+
+
+# Tests for deprecated tags
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_TAGS)
+def test_deprecated_tag_emits_warning(tag_name, tag_class):
+    """Test that deprecated tags emit a DeprecationWarning."""
+    with pytest.warns(DeprecationWarning, match=f"The <{tag_name}> tag is deprecated"):
+        tag_class()
+
+
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_TAGS)
+def test_deprecated_tag_renders(tag_name, tag_class):
+    """Test that deprecated tags still render correctly."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        assert str(tag_class()) == f"<{tag_name}></{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_TAGS)
+def test_deprecated_tag_with_child(tag_name, tag_class):
+    """Test that deprecated tags can have children."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        assert str(tag_class()["content"]) == f"<{tag_name}>content</{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_TAGS)
+def test_deprecated_tag_with_attribute(tag_name, tag_class):
+    """Test that deprecated tags can have attributes."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        assert str(tag_class(id_="test")) == f'<{tag_name} id="test"></{tag_name}>'
+
+
+# Tests for deprecated void tags
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_VOID_TAGS)
+def test_deprecated_void_tag_emits_warning(tag_name, tag_class):
+    """Test that deprecated void tags emit a DeprecationWarning."""
+    with pytest.warns(DeprecationWarning, match=f"The <{tag_name}> tag is deprecated"):
+        tag_class()
+
+
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_VOID_TAGS)
+def test_deprecated_void_tag_renders(tag_name, tag_class):
+    """Test that deprecated void tags still render correctly."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        assert str(tag_class()) == f"<{tag_name}>"
+
+
+@pytest.mark.parametrize("tag_name,tag_class", DEPRECATED_VOID_TAGS)
+def test_deprecated_void_tag_rejects_children(tag_name, tag_class):
+    """Test that deprecated void tags raise an error when given children."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        with pytest.raises(ValueError) as excinfo:
+            tag_class()["content"]
+        assert f"Void tag <{tag_name}> cannot have children" in str(excinfo.value)
