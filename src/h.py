@@ -158,8 +158,8 @@ class tag(html_item):
 
 
 class doctype(tag):
-    def __init__(self, **data):
-        super().__init__("doctype", **data)
+    def __init__(self, *children, **data):
+        super().__init__("doctype", *children, **data)
 
     def __str__(self):
         html = "<!DOCTYPE html>"
