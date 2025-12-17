@@ -78,6 +78,47 @@ doc = doctype()[
 print(doc)
 ```
 
+### Django Templatetag for Meta Tags
+
+Create a reusable templatetag to render meta tags in your Django templates:
+
+```python
+# yourapp/templatetags/meta_tags.py
+from django import template
+from django.utils.safestring import mark_safe
+
+from h import title, meta
+
+register = template.Library()
+
+
+@register.simple_tag
+def meta_tags(*, page_title, page_description):
+    """Render title and meta tags for SEO and OpenGraph."""
+    tags = [
+        title()[page_title],
+        meta(name="description", content=page_description),
+        meta(property="og:title", content=page_title),
+        meta(property="og:description", content=page_description),
+    ]
+    return mark_safe("".join(str(tag) for tag in tags))
+```
+
+Use it in your Django template:
+
+```html
+{% load meta_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    {% meta_tags page_title="My Page Title" page_description="A description of my page." %}
+</head>
+<body>
+    ...
+</body>
+</html>
+```
+
 ## Inspiration
 
 - [Hyperscript](https://github.com/hyperhype/hyperscript)
