@@ -44,6 +44,9 @@ Changelog = "https://github.com/jefftriplett/h-template/blob/main/HISTORY.md"
 [tool.hatch.build.targets.wheel]
 packages = ["src/h.py"]
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
 [tool.flake8]
 max-line-length = 80
 select = ["C", "E", "F", "W", "B", "B950"]
