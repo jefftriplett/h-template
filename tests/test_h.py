@@ -500,3 +500,10 @@ def test_deprecated_tag_positional_children():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
         assert str(h.center("centered text")) == "<center>centered text</center>"
+
+
+def test_base_tag_class_getitem_raises():
+    """Test that using tag[...] directly raises TypeError."""
+    with pytest.raises(TypeError) as excinfo:
+        h.tag["content"]
+    assert "Cannot use tag[...] directly" in str(excinfo.value)

@@ -115,6 +115,8 @@ class tag(html_item):
 
     @classmethod
     def __class_getitem__(cls, key):
+        if cls is tag:
+            raise TypeError("Cannot use tag[...] directly; use a specific tag like div[...] or tag('div')[...]")
         return cls()[key]
 
     def __str__(self):
