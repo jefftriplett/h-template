@@ -31,9 +31,10 @@ from h import (
 
 def navbar(links: list[tuple[str, str]]) -> nav:
     """Create a navigation bar from a list of (text, url) tuples."""
-    return nav(class_="navbar")[
-        ul[[li[a(href=url)[text]] for text, url in links]]
-    ]
+    return nav(
+        ul(*[li(a(text, href=url)) for text, url in links]),
+        class_="navbar",
+    )
 
 
 def card(heading: str, content: str, image_url: str | None = None) -> div:
@@ -41,48 +42,49 @@ def card(heading: str, content: str, image_url: str | None = None) -> div:
     children = []
     if image_url:
         children.append(img(src=image_url, alt=heading, class_="card-image"))
-    children.append(h2[heading])
-    children.append(p[content])
-    return div(class_="card")[children]
+    children.append(h2(heading))
+    children.append(p(content))
+    return div(*children, class_="card")
 
 
 def page(title_text: str, content) -> doctype:
     """Create a complete HTML page."""
-    return doctype()[
-        html(lang="en")[
-            head[
+    return doctype(
+        html(
+            head(
                 meta(charset="utf-8"),
                 meta(name="viewport", content="width=device-width, initial-scale=1"),
-                title[title_text],
-                style[
+                title(title_text),
+                style(
                     """
                     body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; }
                     .navbar ul { display: flex; gap: 1rem; list-style: none; padding: 0; }
                     .card { border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
                     footer { margin-top: 2rem; color: #666; }
                     """
-                ],
-            ],
-            body[content],
-        ]
-    ]
+                ),
+            ),
+            body(*content),
+            lang="en",
+        )
+    )
 
 
 def main_content():
     """Build the main page content."""
     return [
         comment("Header section"),
-        header[
-            h1["Welcome to h-templates"],
-            p["A hyperscript-style HTML generation library for Python."],
-        ],
+        header(
+            h1("Welcome to h-templates"),
+            p("A hyperscript-style HTML generation library for Python."),
+        ),
         navbar([
             ("Home", "/"),
             ("About", "/about"),
             ("Contact", "/contact"),
         ]),
         comment("Main content"),
-        main[
+        main(
             card(
                 "Getting Started",
                 "Use Python to generate HTML with a clean, composable API.",
@@ -91,21 +93,21 @@ def main_content():
                 "No Templates Needed",
                 "Write your views entirely in Python - no template language to learn.",
             ),
-            div[
-                p["Features:"],
-                ul[
-                    li["Hyperscript-style syntax: ", span(class_="code")["div['content']"]],
-                    li["Automatic HTML escaping for security"],
-                    li["Void tags handled correctly (br, img, etc.)"],
-                    li["Supports attributes, classes, and inline styles"],
-                ],
-            ],
-        ],
+            div(
+                p("Features:"),
+                ul(
+                    li("Pythonic syntax: ", span("div('content')", class_="code")),
+                    li("Automatic HTML escaping for security"),
+                    li("Void tags handled correctly (br, img, etc.)"),
+                    li("Supports attributes, classes, and inline styles"),
+                ),
+            ),
+        ),
         comment("Footer"),
-        footer[
-            p["Built with h-templates"],
-            p["Python ", span[f"{__import__('sys').version_info.major}.{__import__('sys').version_info.minor}"]],
-        ],
+        footer(
+            p("Built with h-templates"),
+            p("Python ", span(f"{__import__('sys').version_info.major}.{__import__('sys').version_info.minor}")),
+        ),
     ]
 
 
