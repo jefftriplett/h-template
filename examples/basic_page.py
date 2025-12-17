@@ -25,7 +25,6 @@ from h import (
     div,
     span,
     img,
-    br,
     comment,
 )
 
