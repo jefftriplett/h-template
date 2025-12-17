@@ -1,0 +1,11 @@
+# ty type checker configuration
+# https://docs.astral.sh/ty/
+
+[rules]
+# Pydantic models accept field names as kwargs in __init__, but ty doesn't
+# understand the metaclass magic that makes this work.
+unknown-argument = "ignore"
+
+# We intentionally override __class_getitem__ to provide div["content"] syntax
+# instead of Pydantic's generic type behavior.
+invalid-method-override = "ignore"
