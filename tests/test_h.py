@@ -437,3 +437,66 @@ def test_deprecated_void_tag_rejects_children(tag_name, tag_class):
         with pytest.raises(ValueError) as excinfo:
             tag_class()["content"]
         assert f"Void tag <{tag_name}> cannot have children" in str(excinfo.value)
+
+
+# Tests for positional argument children syntax
+def test_tag_with_string_child_positional():
+    """Test that tags accept string children as positional args."""
+    assert str(h.strong("hello")) == "<strong>hello</strong>"
+
+
+def test_tag_with_nested_tag_positional():
+    """Test that tags accept nested tags as positional args."""
+    assert str(h.strong(h.em("hello"))) == "<strong><em>hello</em></strong>"
+
+
+def test_tag_with_multiple_positional_children():
+    """Test that tags accept multiple positional children."""
+    assert str(h.div("hello", " ", "world")) == "<div>hello world</div>"
+
+
+def test_tag_with_mixed_positional_children():
+    """Test that tags accept mixed string and tag children."""
+    assert str(h.p("Hello ", h.strong("world"), "!")) == "<p>Hello <strong>world</strong>!</p>"
+
+
+def test_tag_positional_and_attrs():
+    """Test that tags accept positional children with attributes."""
+    assert str(h.a("Click here", href="https://example.com")) == '<a href="https://example.com">Click here</a>'
+
+
+def test_tag_deeply_nested_positional():
+    """Test deeply nested tags with positional syntax."""
+    result = str(h.div(h.p(h.strong(h.em("nested")))))
+    assert result == "<div><p><strong><em>nested</em></strong></p></div>"
+
+
+def test_tag_positional_with_integer():
+    """Test that integer children work with positional args."""
+    assert str(h.span(42)) == "<span>42</span>"
+
+
+def test_tag_positional_with_None_ignored():
+    """Test that None children are ignored with positional args."""
+    assert str(h.div("a", None, "b")) == "<div>ab</div>"
+
+
+def test_void_tag_rejects_positional_children():
+    """Test that void tags raise an error with positional children."""
+    with pytest.raises(ValueError) as excinfo:
+        h.hr("content")
+    assert "Void tag <hr> cannot have children" in str(excinfo.value)
+
+
+def test_tag_positional_cant_use_bracket_after():
+    """Test that bracket syntax raises error after positional children."""
+    with pytest.raises(ValueError) as excinfo:
+        h.div("first")["second"]
+    assert "Cannot reassign children" in str(excinfo.value)
+
+
+def test_deprecated_tag_positional_children():
+    """Test that deprecated tags work with positional children."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        assert str(h.center("centered text")) == "<center>centered text</center>"

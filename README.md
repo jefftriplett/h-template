@@ -13,36 +13,55 @@ pip install h-template
 ## Usage
 
 ```python
-from h import div, p, a, ul, li, html, head, body, title
+from h import div, p, a, ul, li, html, head, body, title, strong, em
 
 # Simple tag with text
-greeting = div()["Hello, World!"]
+greeting = div("Hello, World!")
 print(greeting)
 # <div>Hello, World!</div>
 
 # Tag with attributes (use class_ for "class" since it's a Python keyword)
-container = div(class_="container", id="main")["Content here"]
+container = div("Content here", class_="container", id="main")
 print(container)
 # <div class="container" id="main">Content here</div>
 
 # Nested tags
-nav = ul()[
-    li()[a(href="/")["Home"]],
-    li()[a(href="/about")["About"]],
-]
+nav = ul(
+    li(a("Home", href="/")),
+    li(a("About", href="/about")),
+)
 print(nav)
 # <ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li></ul>
 
 # Full document
-doc = html()[
-    head()[title()["My Page"]],
-    body()[
-        div(class_="container")[
-            p()["Welcome to my page!"]
-        ]
-    ]
-]
+doc = html(
+    head(title("My Page")),
+    body(
+        div(
+            p("Welcome to my page!"),
+            class_="container",
+        )
+    )
+)
 print(doc)
+
+# Nested inline tags
+message = p("Hello ", strong("world"), "!")
+print(message)
+# <p>Hello <strong>world</strong>!</p>
+
+# Deeply nested formatting
+styled = div(p(strong(em("emphasized and bold"))))
+print(styled)
+# <div><p><strong><em>emphasized and bold</em></strong></p></div>
+```
+
+Bracket syntax is also supported:
+
+```python
+# Bracket syntax for children
+div()["Hello, World!"]
+div(class_="container")["Content here"]
 ```
 
 ### Page with Meta and OpenGraph Tags
@@ -53,10 +72,10 @@ from h import doctype, html, head, title, meta, body, h1, p
 page_title = "My Awesome Page"
 page_description = "A brief description of my page for search engines and social sharing."
 
-doc = doctype()[
-    html(lang="en")[
-        head()[
-            title()[page_title],
+doc = doctype(
+    html(
+        head(
+            title(page_title),
             meta(charset="utf-8"),
             meta(name="viewport", content="width=device-width, initial-scale=1"),
 
@@ -68,13 +87,14 @@ doc = doctype()[
             meta(property="og:description", content=page_description),
             meta(property="og:type", content="website"),
             meta(property="og:url", content="https://example.com/my-page"),
-        ],
-        body()[
-            h1()[page_title],
-            p()[page_description],
-        ]
-    ]
-]
+        ),
+        body(
+            h1(page_title),
+            p(page_description),
+        ),
+        lang="en",
+    )
+)
 print(doc)
 ```
 
@@ -96,7 +116,7 @@ register = template.Library()
 def meta_tags(*, page_title, page_description):
     """Render title and meta tags for SEO and OpenGraph."""
     tags = [
-        title()[page_title],
+        title(page_title),
         meta(name="description", content=page_description),
         meta(property="og:title", content=page_title),
         meta(property="og:description", content=page_description),

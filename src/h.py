@@ -70,11 +70,24 @@ class tag(html_item):
     children: tuple = Field(default=())
     attrs: dict[str, Any] = Field(default_factory=dict)
 
-    def __init__(self, _tag: str, **attrs):
+    def __init__(self, _tag: str, *children, **attrs):
         is_void = _tag in void_tags
         attr_aliases = {"class_": "class", "id_": "id"}
         processed_attrs = {attr_aliases.get(key, key): value for key, value in attrs.items()}
-        super().__init__(tag_name=_tag, is_void=is_void, attrs=processed_attrs, children=())
+
+        processed_children = []
+        if children:
+            if is_void:
+                raise ValueError(f"Void tag <{_tag}> cannot have children")
+            for child in children:
+                if isinstance(child, html_item):
+                    processed_children.append(child)
+                elif child is None:
+                    pass
+                else:
+                    processed_children.append(text(child))
+
+        super().__init__(tag_name=_tag, is_void=is_void, attrs=processed_attrs, children=tuple(processed_children))
 
     def __getitem__(self, key):
         if self.children:
@@ -156,20 +169,20 @@ class doctype(tag):
 
 
 def tag_class(_tag):
-    def __init__(self, **attrs):
-        tag.__init__(self, _tag, **attrs)
+    def __init__(self, *children, **attrs):
+        tag.__init__(self, _tag, *children, **attrs)
 
     return type(_tag, (tag,), {"__init__": __init__})
 
 
 def deprecated_tag_class(_tag):
-    def __init__(self, **attrs):
+    def __init__(self, *children, **attrs):
         warnings.warn(
             f"The <{_tag}> tag is deprecated in HTML5",
             DeprecationWarning,
             stacklevel=2,
         )
-        tag.__init__(self, _tag, **attrs)
+        tag.__init__(self, _tag, *children, **attrs)
 
     return type(_tag, (tag,), {"__init__": __init__})
 
