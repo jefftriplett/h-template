@@ -9,7 +9,7 @@ description = "Experimental project for generating HTML in Python using Pydantic
 readme = "README.md"
 license = "ISC"
 authors = [
-    { name = "Adam Johnson", email = "me@adamj.eu" }
+    { name = "Jeff Triplett", email = "jeff.triplett@gmail.com" }
 ]
 keywords = ["AWS", "EC2", "metadata"]
 classifiers = [
