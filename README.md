@@ -45,6 +45,39 @@ doc = html()[
 print(doc)
 ```
 
+### Page with Meta and OpenGraph Tags
+
+```python
+from h import doctype, html, head, title, meta, body, h1, p
+
+page_title = "My Awesome Page"
+page_description = "A brief description of my page for search engines and social sharing."
+
+doc = doctype()[
+    html(lang="en")[
+        head()[
+            title()[page_title],
+            meta(charset="utf-8"),
+            meta(name="viewport", content="width=device-width, initial-scale=1"),
+
+            # SEO meta tags
+            meta(name="description", content=page_description),
+
+            # OpenGraph tags
+            meta(property="og:title", content=page_title),
+            meta(property="og:description", content=page_description),
+            meta(property="og:type", content="website"),
+            meta(property="og:url", content="https://example.com/my-page"),
+        ],
+        body()[
+            h1()[page_title],
+            p()[page_description],
+        ]
+    ]
+]
+print(doc)
+```
+
 ## Inspiration
 
 - [Hyperscript](https://github.com/hyperhype/hyperscript)
