@@ -31,6 +31,11 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
 [project.urls]
 Homepage = "https://github.com/jefftriplett/h-template"
 Changelog = "https://github.com/jefftriplett/h-template/blob/main/HISTORY.md"
