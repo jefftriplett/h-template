@@ -44,3 +44,4 @@ output/*.html
 output/*/index.html
 
 venv
+.venv
