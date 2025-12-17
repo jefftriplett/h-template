@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "h-template"
+version = "1.0.0b1"
+description = "Experimental project for generating HTML in Python using Pydantic BaseModel."
+readme = "README.md"
+license = "ISC"
+authors = [
+    { name = "Adam Johnson", email = "me@adamj.eu" }
+]
+keywords = ["AWS", "EC2", "metadata"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: ISC License (ISCL)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/adamchainz/h"
+Changelog = "https://github.com/adamchainz/h/blob/master/HISTORY.rst"
+
+[tool.setuptools]
+py-modules = ["h"]
+zip-safe = false
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.flake8]
+max-line-length = 80
+select = ["C", "E", "F", "W", "B", "B950"]
+ignore = ["E501", "W503"]
+
+[tool.isort]
+include_trailing_comma = true
+force_grid_wrap = 0
+known_first_party = ["h"]
+line_length = 88
+multi_line_output = 3
+use_parentheses = true
