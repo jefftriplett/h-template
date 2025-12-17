@@ -74,7 +74,7 @@ def main_content():
     return [
         comment("Header section"),
         header[
-            h1["Welcome to h-pydantic"],
+            h1["Welcome to h-templates"],
             p["A hyperscript-style HTML generation library for Python."],
         ],
         navbar([
@@ -104,14 +104,14 @@ def main_content():
         ],
         comment("Footer"),
         footer[
-            p["Built with h-pydantic"],
+            p["Built with h-templates"],
             p["Python ", span[f"{__import__('sys').version_info.major}.{__import__('sys').version_info.minor}"]],
         ],
     ]
 
 
 if __name__ == "__main__":
-    html_output = str(page("h-pydantic Example", main_content()))
+    html_output = str(page("h-templates Example", main_content()))
     print(html_output)
 
     # Optionally write to file
