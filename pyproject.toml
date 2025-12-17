@@ -32,8 +32,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/adamchainz/h"
-Changelog = "https://github.com/adamchainz/h/blob/master/HISTORY.rst"
+Homepage = "https://github.com/jefftriplett/h-template"
+Changelog = "https://github.com/jefftriplett/h-template/blob/main/HISTORY.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/h.py"]
